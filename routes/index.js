@@ -1,10 +1,16 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  // Render the `test` view with a title variable available to the template
-  res.render('test', { title: 'test' });
+const path = require('path');
+
+
+router.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'CardScreen.html'));
 });
-
+router.get('/creator', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'CardCreator.html'));
+});
+router.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'Home.html'));
+});
 module.exports = router;

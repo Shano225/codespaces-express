@@ -9,12 +9,12 @@ var usersRouter = require('./routes/users');
 // Database connection exported from connect.js (sqlite3 instance)
 const { DB } = require('./connect');
 // Server port (can be overridden by environment variable)
-const PORT = process.env.PORT || 4500;
+const PORT = process.env.PORT || 3000;
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -36,6 +36,39 @@ app.get('/api', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.json({ flashcards: rows });
+  });
+});
+
+// Get a random flashcard
+// Responds with JSON: { flashcard: { CardID, Front, Back, Reaction } }
+app.get('/api/random', (req, res) => {
+  const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
+  DB.get(sql, [], (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ message: 'No flashcards found' });
+    }
+    res.json({ flashcard: row });
+  });
+});
+
+// Get a single flashcard by CardID
+// Example: GET /api/3
+app.get('/api/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = 'SELECT * FROM flashcard WHERE CardID = ?';
+  DB.get(sql, [id], (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ message: `Flashcard with ID ${id} not found` });
+    }
+    res.json({ flashcard: row });
   });
 });
 
