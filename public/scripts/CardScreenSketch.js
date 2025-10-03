@@ -4,7 +4,6 @@ let currentFront = "";
 let currentBack = "";
 let currentReaction = "";
 let x = 0;
-let testarray = ["word1","word2","word3","word4"]
 function setup(){
     let mycanvas = createCanvas(windowWidth, windowHeight)
     mycanvas.parent(testdiv)
@@ -15,6 +14,7 @@ function setup(){
 function draw(){ 
   background(200)
     rectMode(CENTER)
+    fill(0)
     rect(width/2,height/2, 500, 150)
     fill(250)
     textAlign(CENTER);
@@ -30,40 +30,16 @@ function draw(){
 
 
 function keyPressed(){
-  x++;
-  if (key==='c'){
+if (!showDefinition) {
+    fetchRandomCard();
+  }
+
   showDefinition = !showDefinition;}
 
-
-  if (key==='v'){
-  addFlashcard("test1","test2","good")}
   if (!showDefinition) {
     fetchRandomCard();
   }
 
-}
-
-function addFlashcard(front, back, reaction) {
-  fetch('/api', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      Front: front,
-      Back: back,
-      Reaction: reaction
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Flashcard added:', data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-}
- 
 
 function fetchRandomCard() {
   fetch('/api/random')
@@ -71,7 +47,7 @@ function fetchRandomCard() {
     .then(data => {
       if (data && data.flashcard) {
         currentFront = data.flashcard.Front || '';
-        currentBack = data.flashcard.Back || '';
+        currentBack = data.flashcard.Back || ''; 
         currentReaction = data.flashcard.Reaction || '';
       } else {
         currentFront = 'No flashcards available';
