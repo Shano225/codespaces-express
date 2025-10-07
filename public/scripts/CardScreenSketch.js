@@ -14,15 +14,15 @@ function setup(){
 function draw(){ 
   background(200)
     rectMode(CENTER)
-    fill(0)
-    rect(width/2,height/2, 500, 150)
-    fill(250)
+    fill(50)
+    rect(width/2,height/2, width*0.6, height*0.5)
+    fill(220)
     textAlign(CENTER);
     if (showDefinition) {
-      textSize(18);
+      textSize(width/20);
       text(currentBack || 'No back text', width / 2, height / 2);
     } else {
-      textSize(32);
+      textSize(width/20);
       text(currentFront || 'No front text', width / 2, height / 2);
     }
 }
@@ -30,15 +30,20 @@ function draw(){
 
 
 function keyPressed(){
-if (!showDefinition) {
-    fetchRandomCard();
-  }
 
+if (key ==="p"){
+  if (!showDefinition) {
+    fetchRandomCard();}
   showDefinition = !showDefinition;}
 
-  if (!showDefinition) {
-    fetchRandomCard();
+
+  if (keyCode === 27){
+    fetch('/creator')
   }
+  
+}
+ 
+  
 
 
 function fetchRandomCard() {
