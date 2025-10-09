@@ -135,4 +135,25 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
+app.get('/api/spacedcard', (req, res) => {
+  const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
+  DB.get(sql, [], (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ message: 'No flashcards found' });
+    }
+    res.json({ flashcard: row });
+  });
+});
+
+
+
+
+
+
+
+
 module.exports = app;
