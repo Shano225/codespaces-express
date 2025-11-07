@@ -1,54 +1,52 @@
 let front;
 let back;
 let reaction = "red";
+let textinput
+let backinput
+let htmlDeckSelect
+let submitButton
+let messageEl
+let div;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  frontinput = createElement('textarea');
-  frontinput.position(100, 50);
-  backinput = createElement('textarea');
-  backinput.position(100, 100);
+  // find the container first, then create a canvas sized to it
+  div = document.getElementById("mainscreen");
+  let z = createCanvas(div.clientWidth, div.clientHeight);
+  // attach the p5 canvas into the mainscreen div
+  z.parent(div);
+  rectMode(CENTER)
+  textinput = createElement('textarea');
+  textinput.position(div.clientWidth / 2+130-width / 6.4, div.clientHeight/2-150);
+  textinput.size(div.clientWidth / 3.2, 300)
+  textinput.style("resize:none")
+
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      e.preventDefault();
+      console.log('Escape pressed - navigating to Card Viewer');
+      window.location.href = '/';
+    }
+  })
 }
 
 function draw() {
   background(200);
 }
 
-function keyPressed() {
-  if (keyCode === 13) {
-    front = frontinput.value();
-    back = backinput.value();
 
-    addFlashcard(front, back,reaction);
-  }
-  if (keyCode === 27) {
-    window.location.href = "/";
-  }
-  if (keyCode === 84) {
-   fetch("/home")
-}
-}
-function addFlashcard(front, back, reaction) {
-  fetch("/api", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      Front: front,
-      Back: back,
-      Reaction: reaction,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Flashcard added:", data);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
+
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  // keep canvas sized to the mainscreen container
+  textinput.position(div.clientWidth / 2+130-width / 6.4, div.clientHeight/2-150);
+  
+  if (div) resizeCanvas(div.clientWidth, div.clientHeight);
+  textinput.size(width / 3.2, 300)
+
 }
+window.addEventListener('hashchange', function () {
+  if (window.location.hash === '#home') {
+    window.location.href = '/';
+  }
+});

@@ -4,14 +4,25 @@ let currentFront = "";
 let currentBack = "";
 let currentReaction = "";
 let x = 0;
-let mouseX
+// Do not declare mouseX or mouseY here — p5 provides them globally.
 function setup() {
   let mycanvas = createCanvas(windowWidth, windowHeight);
   mycanvas.parent(testdiv);
 
   // Load initial random card
   fetchRandomCard();
+
+  // Also listen on the window for Escape so a single press works even if the
+  // p5 canvas doesn't have keyboard focus.
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      e.preventDefault();
+      window.location.href = '/creator';
+    }
+  });
 }
+
+
 function draw() {
   let cardheight = height * 0.5;
   let cardwidth = width * 0.6;
@@ -40,6 +51,7 @@ function keyPressed() {
 
   if (keyCode === 27) {
     window.location.href = "/creator";
+    console.log("Going to Card creator")
   }
 }
 
@@ -84,3 +96,8 @@ function fetchRandomCard() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#home') {
+        window.location.href = '/';
+    }
+});

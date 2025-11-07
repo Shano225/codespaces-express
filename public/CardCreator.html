@@ -1,13 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
-    <script src="scripts/CardCreatorSketch.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
+  <script src="scripts/CardCreatorSketch.js"></script>
 </head>
+
 <body>
-    
-</body>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      width: 130px;
+      background-color: #f1f1f1;
+      position: fixed;
+      height: 100%;
+      z-index: 5;
+      overflow: auto;
+    }
+
+    li a {
+      display: block;
+      color: black;
+      padding: 8px 16px;
+      text-decoration: none;
+    }
+
+    li a.active {
+      background-color: #9affff;
+      color: white;
+    }
+
+    li a:hover:not(.active) {
+      background-color: #555555;
+      color: white;
+    }
+
+    /* Ensure the card creator UI sits above the p5 canvas and the fixed menu */
+  </style>
+  </head>
+
+  <body>
+
+    <ul>
+      <li><a href="Home.html">Home</a></li>
+      <li><a href="/manager">Card Manager</a></li>
+      <li><a class="active" href="CardCreator.html">Card Creator</a></li>
+      <li><a href="CardScreen.html">Flashcards</a></li>
+    </ul>
+
+    <div id="mainscreen" 
+    style="
+    margin-left:130px;
+    height:1000px;
+
+    ">
+    </div>
+
+  </body>
+
 </html>

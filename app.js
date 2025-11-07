@@ -75,14 +75,14 @@ app.get('/api/:id', (req, res) => {
 // Add a new flashcard
 // Expects JSON body: { Front, Back, Reaction }
 app.post('/api', (req, res) => {
-  const { Front, Back, Reaction } = req.body;
+  const { Front, Back, Reaction, DeckID } = req.body;
 
-  if (!Front || !Back || !Reaction) {
-    return res.status(400).json({ error: 'Front, Back, and Reaction are required' });
+  if (!Front || !Back || !Reaction || !DeckID) {
+    return res.status(400).json({ error: 'Front, Back, Reaction and DeckID are required' });
   }
 
-  const sql = 'INSERT INTO flashcard (Front, Back, Reaction) VALUES (?, ?, ?)';
-  DB.run(sql, [Front, Back, Reaction], function (err) {
+  const sql = 'INSERT INTO flashcard (DeckID, Front, Back, Reaction) VALUES (?, ?, ?, ?)';
+  DB.run(sql, [DeckID, Front, Back, Reaction], function (err) {
     if (err) {
       console.error(err.message);
       return res.status(500).json({ error: err.message });
@@ -93,6 +93,56 @@ app.post('/api', (req, res) => {
     });
   });
 });
+
+// Get all decks
+// Responds with JSON: { decks: [...] }
+app.get('/api/decks', (req, res) => {
+  const sql = 'SELECT * FROM deck';
+  DB.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ decks: rows });
+  });
+});
+
+// Create a new deck
+// Expects JSON body: { Name }
+app.post('/api/decks', (req, res) => {
+  const { Name } = req.body;
+  if (!Name) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  const sql = 'INSERT INTO deck (Name) VALUES (?)';
+  DB.run(sql, [Name], function (err) {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ message: 'Deck created', DeckID: this.lastID, deck: { DeckID: this.lastID, Name } });
+  });
+});
+
+
+
+
+
+app.get('/api', (req, res) => {
+  const sql = 'SELECT * FROM flashcard WHERE FRONT OR BACK LIKE (?)';
+  DB.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ flashcards: rows });
+  });
+});
+
+
+
+
+
 
 // Delete a flashcard by CardID
 // Uses query parameter `id`, e.g. DELETE /api?id=3
@@ -148,8 +198,6 @@ app.get('/api/spacedcard', (req, res) => {
     res.json({ flashcard: row });
   });
 });
-
-
 
 
 
