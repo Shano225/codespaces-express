@@ -1,56 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
-    <script src="scripts/CardManager.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Manager</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    body {
+      background: #fafafa;
+      color: #222;
+    }
+
+    #mainscreen {
+      min-height: calc(100vh - 48px);
+    }
+
+    .manager-inner {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .manager-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .manager-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+
+    .manager-input {
+      padding: 8px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      min-width: 160px;
+    }
+
+    .manager-button {
+      padding: 8px 12px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: #e4e4e4;
+      cursor: pointer;
+    }
+
+    .manager-button.danger {
+      border-color: #b00020;
+      background: #ffe3e3;
+      color: #a00016;
+    }
+
+    .manager-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .card-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .card-table th,
+    .card-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.8rem;
+    }
+
+    .manager-empty {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px dashed #bbb;
+      text-align: center;
+      display: none;
+    }
+
+    .manager-footer {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .manager-message {
+      font-weight: 600;
+    }
+
+    .manager-message--success {
+      color: #0a7a27;
+    }
+
+    .manager-message--error {
+      color: #b00020;
+    }
+  </style>
 </head>
 <body>
-    <style>
-body {
-  margin: 0;
-}
+  <nav class="app-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/cardscreen">Flashcards</a></li>
+      <li><a href="/creator">Card Creator</a></li>
+      <li><a class="active" href="/manager">Card Manager</a></li>
+    </ul>
+  </nav>
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 130px;
-  background-color: #f1f1f1;
-  position: fixed;
-  height: 100%;
-  overflow: auto;
-}
+  <main class="app-layout">
+    <div id="mainscreen"></div>
+  </main>
 
-li a {
-  display: block;
-  color: black;
-  padding: 8px 16px;
-  text-decoration: none;
-}
-
-li a.active {
-  background-color: #9affff;
-  color: white;
-}
-
-li a:hover:not(.active) {
-  background-color: #555555;
-  color: white;
-}
-</style>
-</head>
-<body>
-
-<ul>
-  <li><a href="/home">Home</a></li>
-  <li><a class="active" href="/manager">Card Manager</a></li>
-  <li><a href="/creator">Card Creator</a></li>
-  <li><a href="/cardscreen">Flashcards</a></li>
-</ul>
-
-<div id="mainscreen" style="margin-left:130px;height:100px;">
+  <script defer src="scripts/CardManager.js"></script>
 </body>
 </html>

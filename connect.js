@@ -14,7 +14,7 @@ const DB = new sql3.Database('./mydata.db', sqlite3.OPEN_READWRITE | sqlite3.OPE
 
   // Enable foreign key enforcement in SQLite
   DB.run('PRAGMA foreign_keys = ON', (err) => {
-    if (err) {
+    if (err) {  
       console.log('Could not enable foreign keys:', err.message);
     }
   });
@@ -56,10 +56,78 @@ DB.serialize(() => {
       return;
     }
     console.log('Flashcard table is ready.');
+
+    ensureDeckColumnExists();
   });
 });
 
-module.exports = { DB };
+function ensureDeckColumnExists() {
+  DB.all('PRAGMA table_info(flashcard)', (err, rows) => {
+    if (err) {
+      console.log('Failed to inspect flashcard table:', err.message);
+      return;
+    }
 
+    const hasDeckColumn = rows.some(
+      (row) => String(row.name).toLowerCase() === 'deckid'
+    );
+
+    if (!hasDeckColumn) {
+      DB.run(
+        'ALTER TABLE flashcard ADD COLUMN DeckID INTEGER NOT NULL DEFAULT 1',
+        (alterErr) => {
+          if (alterErr) {
+            console.log('Could not add DeckID column:', alterErr.message);
+            return;
+          }
+          console.log('DeckID column added to flashcard table.');
+          ensureDefaultDeck();
+        }
+      );
+    } else {
+      ensureDefaultDeck();
+    }
+  });
+}
+
+function ensureDefaultDeck() {
+  const defaultDeckName = 'General';
+  DB.get('SELECT DeckID FROM deck WHERE DeckID = 1', (err, row) => {
+    if (err) {
+      console.log('Failed to read default deck:', err.message);
+      return;
+    }
+
+    if (!row) {
+      DB.run(
+        'INSERT INTO deck (DeckID, Name) VALUES (1, ?)',
+        [defaultDeckName],
+        (insertErr) => {
+          if (insertErr) {
+            console.log('Could not create default deck:', insertErr.message);
+            return;
+          }
+          console.log('Default deck created.');
+          assignDeckToOrphanCards();
+        }
+      );
+    } else {
+      assignDeckToOrphanCards();
+    }
+  });
+}
+
+function assignDeckToOrphanCards() {
+  DB.run(
+    'UPDATE flashcard SET DeckID = 1 WHERE DeckID IS NULL OR DeckID = ""',
+    (err) => {
+      if (err) {
+        console.log('Failed to assign deck to existing cards:', err.message);
+      }
+    }
+  );
+}
+
+module.exports = { DB };
 
 

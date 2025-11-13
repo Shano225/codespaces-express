@@ -1,70 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
-  <script src="scripts/CardCreatorSketch.js"></script>
-</head>
-
-<body>
+  <title>Card Creator</title>
+  <link rel="stylesheet" href="css/app.css">
   <style>
     body {
-      margin: 0;
+      background: #fafafa;
     }
 
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      width: 130px;
-      background-color: #f1f1f1;
-      position: fixed;
-      height: 100%;
-      z-index: 5;
-      overflow: auto;
+    #mainscreen {
+      min-height: calc(100vh - 48px);
     }
 
-    li a {
+    .creator-form {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .creator-title {
+      margin: 0 0 16px;
+      font-size: 1.4rem;
+    }
+
+    .creator-field {
+      margin-bottom: 16px;
+    }
+
+    .creator-label {
       display: block;
-      color: black;
-      padding: 8px 16px;
-      text-decoration: none;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
 
-    li a.active {
-      background-color: #9affff;
-      color: white;
+    .creator-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
     }
 
-    li a:hover:not(.active) {
-      background-color: #555555;
-      color: white;
+    .creator-textarea {
+      min-height: 100px;
     }
 
-    /* Ensure the card creator UI sits above the p5 canvas and the fixed menu */
+    .creator-inline {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .creator-inline .creator-control {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .creator-button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .creator-button.primary {
+      width: 100%;
+      background: #333;
+      color: #fff;
+      margin-top: 8px;
+    }
+
+    .creator-button.secondary {
+      background: #e4e4e4;
+      color: #222;
+    }
+
+    .creator-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .creator-message {
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .message-success {
+      color: #0a7a27;
+    }
+
+    .message-error {
+      color: #b00020;
+    }
   </style>
-  </head>
-
-  <body>
-
+</head>
+<body>
+  <nav class="app-nav">
     <ul>
-      <li><a href="Home.html">Home</a></li>
+      <li><a href="/">Home</a></li>
+      <li><a href="/cardscreen">Flashcards</a></li>
+      <li><a class="active" href="/creator">Card Creator</a></li>
       <li><a href="/manager">Card Manager</a></li>
-      <li><a class="active" href="CardCreator.html">Card Creator</a></li>
-      <li><a href="CardScreen.html">Flashcards</a></li>
     </ul>
+  </nav>
 
-    <div id="mainscreen" 
-    style="
-    margin-left:130px;
-    height:1000px;
+  <main class="app-layout">
+    <div id="mainscreen"></div>
+  </main>
 
-    ">
-    </div>
-
-  </body>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
+  <script src="scripts/CardCreatorSketch.js"></script>
+</body>
 </html>

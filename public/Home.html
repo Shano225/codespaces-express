@@ -1,54 +1,167 @@
 <!DOCTYPE html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.0.5/p5.min.js"></script>
-<script src="scripts/Home.js"></script>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-  margin: 0;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    body {
+      background: #fafafa;
+    }
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 230px;
-  background-color: #f1f1f1;
-  position: fixed;
-  height: 100%;
-  overflow: auto;
-}
+    .home-content {
+      min-height: 100vh;
+    }
 
-li a {
-  display: block;
-  color: black;
-  padding: 8px 16px;
-  text-decoration: none;
-}
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
 
-li a.active {
-  background-color: #9affff;
-  color: white;
-}
+    .home-card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 16px;
+      background: #fff;
+    }
 
-li a:hover:not(.active) {
-  background-color: #555555;
-  color: white;
-}
-</style>
+    .home-card h3 {
+      margin: 0 0 6px;
+      font-size: 0.95rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .home-card p {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-actions a {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 16px;
+      text-decoration: none;
+      color: #222;
+      background: #fff;
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+    }
+
+    .list {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .list ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .list li:last-child {
+      border-bottom: none;
+    }
+  </style>
 </head>
 <body>
+  <nav class="app-nav">
+    <ul>
+      <li><a class="active" href="/">Home</a></li>
+      <li><a href="/cardscreen">Flashcards</a></li>
+      <li><a href="/creator">Card Creator</a></li>
+      <li><a href="/manager">Card Manager</a></li>
+    </ul>
+  </nav>
 
-<ul>
-  <li><a class="active" href="Home.html">Home</a></li>
-  <li><a href="CardManager.html">Card Manager</a></li>
-  <li><a href="CardCreator.html">Card Creator</a></li>
-  <li><a href="CardScreen.html">Flashcards</a></li>
-</ul>
+  <main class="app-layout home-content">
+    <div class="section">
+      <div class="home-grid">
+        <div class="home-card">
+          <h3>Due today</h3>
+          <p>12 cards</p>
+        </div>
+        <div class="home-card">
+          <h3>New cards</h3>
+          <p>8 cards</p>
+        </div>
+        <div class="home-card">
+          <h3>Decks</h3>
+          <p>4 decks</p>
+        </div>
+        <div class="home-card">
+          <h3>Streak</h3>
+          <p>5 days</p>
+        </div>
+      </div>
+    </div>
 
-<div id="mainscreen" style="margin-left:230px;height:1000px;">
+    <div class="section">
+      <h2>Quick actions</h2>
+      <div class="quick-actions">
+        <a href="/cardscreen">
+          <strong>Study now</strong>
+          <p>Review a random card set.</p>
+        </a>
+        <a href="/creator">
+          <strong>Create flashcards</strong>
+          <p>Capture new prompts quickly.</p>
+        </a>
+        <a href="/manager">
+          <strong>Manage decks</strong>
+          <p>Search, filter, or delete cards.</p>
+        </a>
+      </div>
+    </div>
 
+    <div class="section">
+      <h2>Recent activity</h2>
+      <div class="list">
+        <ul>
+          <li>Added “React lifecycle” card to Web Dev deck.</li>
+          <li>Created a new “Biology Definitions” deck.</li>
+          <li>Reviewed 30 cards yesterday.</li>
+        </ul>
+      </div>
+    </div>
 
+    <div class="section">
+      <h2>Shortcut tips</h2>
+      <div class="list">
+        <ul>
+          <li><strong>Space</strong> – flip the current card.</li>
+          <li><strong>P</strong> – pull a new random card.</li>
+          <li><strong>Esc</strong> – jump back to the home screen.</li>
+          <li>Use the reaction buttons to speed through reviews.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
-

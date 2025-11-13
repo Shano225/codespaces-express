@@ -1,57 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-body {
-  margin: 0;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    body {
+      background: #fafafa;
+    }
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 130px;
-  background-color: #f1f1f1;
-  position: fixed;
-  height: 100%;
-  overflow: auto;
-}
+    #mainscreen {
+      height: 70vh;
+      border: 1px solid #ddd;
+      background: #fff;
+    }
 
-li a {
-  display: block;
-  color: black;
-  padding: 8px 16px;
-  text-decoration: none;
-}
+    .viewer-hints {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #555;
+    }
 
-li a.active {
-  background-color: #9affff;
-  color: white;
-}
+    .viewer-controls,
+    .viewer-nav {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-li a:hover:not(.active) {
-  background-color: #555555;
-  color: white;
-}
-</style>
+    .viewer-button {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 12px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: #e4e4e4;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .viewer-button:active {
+      background: #d5d5d5;
+    }
+
+    .viewer-button.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+  </style>
 </head>
 <body>
+  <nav class="app-nav">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a class="active" href="/cardscreen">Flashcards</a></li>
+      <li><a href="/creator">Card Creator</a></li>
+      <li><a href="/manager">Card Manager</a></li>
+    </ul>
+  </nav>
 
-<ul>
-  <li><a href="/">Home</a></li>
-  <li><a class="active" href="/cardscrren">Card Screen</a></li>
-  <li><a href="/creator">Card Creator</a></li>
-  <li><a href="/manager">Card Manager</a></li>
-</ul>
-<div id="mainscreen" style="margin-left:130px;height:1000px;">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amphi</title>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
-    <script src="scripts/CardScreenSketch.js"></script>
-</head>
-<body>
-<div id="testdiv"></div>
+  <main class="app-layout" id="content">
+    <div id="mainscreen"></div>
+    <div class="viewer-nav">
+      <button class="viewer-button" data-arrow="prev">← Previous</button>
+      <button class="viewer-button" data-arrow="next">Next →</button>
+    </div>
+    <div class="viewer-controls">
+      <select class="viewer-button" id="deckSelect">
+        <option value="">Loading decks…</option>
+      </select>
+    </div>
+    <div class="viewer-controls">
+      <button class="viewer-button" data-reaction-btn="again">Again</button>
+      <button class="viewer-button" data-reaction-btn="hard">Hard</button>
+      <button class="viewer-button" data-reaction-btn="good">Good</button>
+      <button class="viewer-button" data-reaction-btn="great">Great</button>
+    </div>
+    <div class="viewer-hints">
+      Use Space/Click to flip, P or → for next, ← for previous, Esc to leave.
+    </div>
+  </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
+  <script src="scripts/BasicSpacedRepetion.js"></script>
+  <script src="scripts/CardScreenSketch.js"></script>
 </body>
 </html>
