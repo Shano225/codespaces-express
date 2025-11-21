@@ -145,12 +145,7 @@ function drawCard() {
   const cardX = width / 2;
   const cardY = height / 2 - 20;
 
-  push();
-  rectMode(CENTER);
-  noStroke();
-  fill(0, 0, 0, 25);
-  rect(cardX + 6, cardY + 12, cardWidth, cardHeight, 18);
-  pop();
+
 
   push();
   rectMode(CENTER);
