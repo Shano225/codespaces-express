@@ -8,6 +8,12 @@ router.get('/cardscreen', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'CardScreen.html'));
 });
 
+
+
+router.get('/cardscreen', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'CardScreen.html'));
+});
+
 router.get('/creator', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'CardCreator.html'));
 });
@@ -16,7 +22,10 @@ router.get('/creator', (req, res) => {
 
 
 router.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'Login.html'));
+});
 
+router.get('/home', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'Home.html'));
 });
 router.get('/manager', (req, res) => {

@@ -118,7 +118,7 @@ function attachEvents() {
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.keyCode === 27) {
       e.preventDefault();
-      window.location.href = '/';
+      window.location.href = '/home';
     }
   });
 }

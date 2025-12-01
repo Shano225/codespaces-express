@@ -108,12 +108,12 @@ app.get('/api/decks', (req, res) => {
 // Create a new deck
 // Expects JSON body: { Name }
 app.post('/api/decks', (req, res) => {
-  const { Name } = req.body;
+  const { Name, Username } = req.body;
   if (!Name) {
     return res.status(400).json({ error: 'Name is required' });
   }
-  const sql = 'INSERT INTO deck (Name) VALUES (?)';
-  DB.run(sql, [Name], function (err) {
+  const sql = 'INSERT INTO deck (Name, Username) VALUES (?, ?)';
+  DB.run(sql, [Name, Username], function (err) {
     if (err) {
       console.error(err.message);
       return res.status(500).json({ error: err.message });

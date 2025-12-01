@@ -179,7 +179,10 @@ function handleCreateDeck() {
   fetch('/api/decks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ Name: name })
+    body: JSON.stringify({
+      Name: name,
+      Username: localStorage.getItem('username') || 'Anonymous'
+    })
   })
     .then((res) => {
       if (!res.ok) {
@@ -221,13 +224,13 @@ function attachGlobalShortcuts() {
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.keyCode === 27) {
       e.preventDefault();
-      window.location.href = '/';
+      window.location.href = '/home';
     }
   });
 
   window.addEventListener('hashchange', () => {
     if (window.location.hash === '#home') {
-      window.location.href = '/';
+      window.location.href = '/home';
     }
   });
 }
