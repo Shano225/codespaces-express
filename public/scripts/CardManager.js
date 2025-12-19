@@ -1,3 +1,5 @@
+// CardManager.js
+// Manages the display, filtering, and deletion of flashcards
 // Flashcard manager: fetches cards/decks and provides filtering + deletion UI.
 const state = {
   cards: [],
@@ -23,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadInitialData();
 });
 
+// Creates the HTML layout for the manager
+// Returns a template string with the layout
 function createLayout() {
   return `
     <div class="manager-inner">
@@ -82,6 +86,8 @@ function createLayout() {
   `;
 }
 
+// Caches DOM elements for quick access
+// root: The root element to search within
 function cacheDomReferences(root) {
   dom = {
     searchInput: root.querySelector('[data-search]'),
@@ -95,6 +101,8 @@ function cacheDomReferences(root) {
   };
 }
 
+// Attaches event listeners to UI elements
+// Handles search, filter changes, refresh, and keyboard shortcuts
 function attachEvents() {
   dom.searchInput?.addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim().toLowerCase();
@@ -123,6 +131,8 @@ function attachEvents() {
   });
 }
 
+// Loads initial data (decks and cards)
+// showToast: Whether to show a success message after loading
 async function loadInitialData(showToast = false) {
   setLoading('Loading cards…');
   try {
@@ -138,6 +148,8 @@ async function loadInitialData(showToast = false) {
   }
 }
 
+// Fetches decks from the server
+// Updates the state with the fetched decks
 async function loadDecks() {
   const res = await fetch('/api/decks');
   if (!res.ok) {
@@ -148,6 +160,8 @@ async function loadDecks() {
   populateDeckFilter();
 }
 
+// Fetches cards from the server
+// Updates the state with the fetched cards
 async function loadCards() {
   const res = await fetch('/api');
   if (!res.ok) {
@@ -158,6 +172,8 @@ async function loadCards() {
   renderCards();
 }
 
+// Populates the deck filter dropdown
+// Uses the decks stored in state
 function populateDeckFilter() {
   if (!dom.deckFilter) return;
   const current = state.filters.deckId;
@@ -173,6 +189,8 @@ function populateDeckFilter() {
   });
 }
 
+// Renders the list of cards based on current filters
+// Updates the table body and stats
 function renderCards() {
   if (!dom.tableBody) return;
 
@@ -229,16 +247,23 @@ function renderCards() {
   updateStats(filtered.length);
 }
 
+// Resolves deck ID to deck name
+// deckId: The ID of the deck
 function resolveDeckName(deckId) {
   const match = state.decks.find((deck) => String(deck.DeckID) === String(deckId));
   return match ? match.Name : '—';
 }
 
+// Shortens text to a maximum length
+// text: The text to shorten
+// max: Maximum length
 function shorten(text = '', max = 60) {
   if (text.length <= max) return text;
   return `${text.slice(0, max - 1)}…`;
 }
 
+// Escapes HTML special characters
+// text: The text to escape
 function escapeHtml(text = '') {
   return text
     .replace(/&/g, '&amp;')
@@ -246,12 +271,16 @@ function escapeHtml(text = '') {
     .replace(/>/g, '&gt;');
 }
 
+// Updates the visible card count stats
+// visibleCount: Number of cards currently visible
 function updateStats(visibleCount) {
   if (!dom.stats) return;
   const total = state.cards.length;
   dom.stats.textContent = `${visibleCount} of ${total} cards visible.`;
 }
 
+// Shows a loading message in the empty state area
+// text: The message to display
 function setLoading(text) {
   if (dom.emptyState) {
     dom.emptyState.textContent = text;
@@ -259,12 +288,16 @@ function setLoading(text) {
   }
 }
 
+// Hides the loading message
 function clearLoading() {
   if (dom.emptyState) {
     dom.emptyState.style.display = 'none';
   }
 }
 
+// Displays a toast message
+// text: Message text
+// type: 'info', 'success', 'error'
 function showMessage(text, type = 'info') {
   if (!dom.message) return;
   dom.message.textContent = text;
@@ -280,6 +313,9 @@ function showMessage(text, type = 'info') {
   }
 }
 
+// Deletes a card by ID
+// cardId: ID of the card to delete
+// button: The button element that triggered the delete
 async function deleteCard(cardId, button) {
   if (!cardId) return;
 

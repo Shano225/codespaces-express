@@ -1,3 +1,5 @@
+// CardCreatorSketch.js
+// Handles the UI and logic for creating new flashcards and decks
 // Card creator screen built with p5 + DOM helpers.
 // DOM references that the sketch keeps around for quick access.
 let frontInput;
@@ -10,6 +12,8 @@ let newDeckButton;
 let messageEl;
 let div;
 
+// Setup function called by p5.js
+// Initializes the canvas and UI elements
 function setup() {
   div = document.getElementById('mainscreen');
 
@@ -23,8 +27,12 @@ function setup() {
   attachGlobalShortcuts();
 }
 
+// Draw loop called by p5.js
+// Not used in this sketch as it's DOM-based
 function draw() {}
 
+// Builds the form UI using p5.dom
+// Creates inputs, buttons, and selects
 function buildFormUI() {
   // Build the entire form dynamically so it can share styles with the rest of the app.
   const formWrapper = createDiv().addClass('creator-form');
@@ -81,6 +89,10 @@ function buildFormUI() {
   showMessage('Fill in the details to create a flashcard.', 'info');
 }
 
+// Helper to create a textarea field with label
+// label: Label text
+// placeholder: Placeholder text
+// parent: Parent element
 function createTextareaField(label, placeholder, parent) {
   // Helpers stay small and opinionated to keep buildFormUI readable.
   const textarea = createElement('textarea');
@@ -91,6 +103,10 @@ function createTextareaField(label, placeholder, parent) {
   return textarea;
 }
 
+// Helper to append a field to a parent element
+// labelText: Label text
+// element: DOM element to append
+// parent: Parent element
 function appendField(labelText, element, parent) {
   const wrapper = createDiv().addClass('creator-field');
   wrapper.parent(parent);
@@ -100,6 +116,7 @@ function appendField(labelText, element, parent) {
   element.parent(wrapper);
 }
 
+// Fetches decks from the server and populates the dropdown
 function loadDecks() {
   // Refresh the deck dropdown with server data.
   if (!deckSelect) return;
@@ -122,12 +139,16 @@ function loadDecks() {
     });
 }
 
+// Handles card submission
+// Validates input and sends POST request to create card
 function handleSubmit() {
   // Client-side validation guards against empty inputs before hitting the server.
   const front = frontInput?.value().trim();
   const back = backInput?.value().trim();
   const deckId = deckSelect?.value();
   const reaction = reactionSelect?.value() || 'again';
+  
+  console.log('Submitting card with DeckID:', deckId);
 
   if (!front || !back || !deckId) {
     showMessage('Front, back, and deck are required.', 'error');
@@ -166,6 +187,8 @@ function handleSubmit() {
     });
 }
 
+// Handles new deck creation
+// Validates input and sends POST request to create deck
 function handleCreateDeck() {
   // Basic guard to stop empty deck names from hitting the backend.
   const name = newDeckInput?.value().trim();
@@ -209,6 +232,9 @@ function handleCreateDeck() {
     });
 }
 
+// Displays a message to the user
+// text: Message text
+// type: 'info', 'success', 'error'
 function showMessage(text, type = 'info') {
   // Swap CSS classes instead of inline styles so the page theme can decide colors.
   if (!messageEl) return;
@@ -219,6 +245,8 @@ function showMessage(text, type = 'info') {
   messageEl.addClass(`message-${type}`);
 }
 
+// Attaches global keyboard shortcuts
+// Escape to go home
 function attachGlobalShortcuts() {
   // Escape returns to home; hashchange matches the behavior on other sketches.
   window.addEventListener('keydown', (e) => {

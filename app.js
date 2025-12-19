@@ -1,3 +1,5 @@
+// Main application file for the Express server
+// Sets up middleware, routes, and database connection
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -26,6 +28,7 @@ app.use('/users', usersRouter);
 
 // Get all flashcards
 // Responds with JSON: { flashcards: [...] }
+// This endpoint retrieves all flashcards from the database.
 app.get('/api', (req, res) => {
   const sql = 'SELECT * FROM flashcard';
   DB.all(sql, [], (err, rows) => {
@@ -39,6 +42,7 @@ app.get('/api', (req, res) => {
 
 // Get a random flashcard
 // Responds with JSON: { flashcard: { CardID, Front, Back, Reaction } }
+// This endpoint retrieves a single random flashcard from the database.
 app.get('/api/random', (req, res) => {
   const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
   DB.get(sql, [], (err, row) => {
@@ -55,6 +59,7 @@ app.get('/api/random', (req, res) => {
 
 // Get a single flashcard by CardID
 // Example: GET /api/3
+// This endpoint retrieves a specific flashcard by its ID.
 app.get('/api/:id', (req, res) => {
   const id = req.params.id;
   const sql = 'SELECT * FROM flashcard WHERE CardID = ?';
@@ -72,8 +77,10 @@ app.get('/api/:id', (req, res) => {
 
 // Add a new flashcard
 // Expects JSON body: { Front, Back, Reaction }
+// This endpoint creates a new flashcard in the database.
 app.post('/api', (req, res) => {
   const { Front, Back, Reaction, DeckID } = req.body;
+  console.log('POST /api received:', { Front, Back, Reaction, DeckID });
 
   if (!Front || !Back || !Reaction || !DeckID) {
     return res.status(400).json({ error: 'Front, Back, Reaction and DeckID are required' });
@@ -94,6 +101,7 @@ app.post('/api', (req, res) => {
 
 // Get all decks
 // Responds with JSON: { decks: [...] }
+// This endpoint retrieves all decks from the database.
 app.get('/api/decks', (req, res) => {
   const sql = 'SELECT * FROM deck';
   DB.all(sql, [], (err, rows) => {
@@ -107,6 +115,7 @@ app.get('/api/decks', (req, res) => {
 
 // Create a new deck
 // Expects JSON body: { Name }
+// This endpoint creates a new deck in the database.
 app.post('/api/decks', (req, res) => {
   const { Name, Username } = req.body;
   if (!Name) {
@@ -126,16 +135,6 @@ app.post('/api/decks', (req, res) => {
 
 
 
-app.get('/api', (req, res) => {
-  const sql = 'SELECT * FROM flashcard WHERE FRONT OR BACK LIKE (?)';
-  DB.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error(err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ flashcards: rows });
-  });
-});
 
 
 
@@ -144,6 +143,7 @@ app.get('/api', (req, res) => {
 
 // Delete a flashcard by CardID
 // Uses query parameter `id`, e.g. DELETE /api?id=3
+// This endpoint deletes a flashcard from the database by its ID.
 app.delete('/api', (req, res) => {
   const id = req.query.id;
 
@@ -183,6 +183,8 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
+// Get a random spaced repetition card
+// Currently behaves same as random, but intended for spaced repetition logic
 app.get('/api/spacedcard', (req, res) => {
   const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
   DB.get(sql, [], (err, row) => {

@@ -1,3 +1,5 @@
+// Home.js
+// Home screen sketch using p5.js
 // Placeholder p5 sketch used to render basic shapes/search on the Home page.
 let Searchval;
 if (
@@ -7,6 +9,8 @@ if (
 ) {
   closedstate = 0.75;
 }
+// Setup function called by p5.js
+// Initializes canvas and search input
 function setup() {
   div = document.getElementById("mainscreen");
   let z = createCanvas(div.clientWidth, div.clientHeight);
@@ -15,12 +19,16 @@ function setup() {
   Search.size(div.clientWidth / 6, div.clientHeight / 25);
   z.parent(mainscreen);
 }
+// Handles key press events
+// Captures search input on Enter key
 function keyPressed() {
   if (keyCode === 13) {
     Searchval = Search.value();
   }
 }
 
+// Draw loop called by p5.js
+// Renders background and shapes
 function draw() {
   background(202);
   rectMode(CENTER);
@@ -40,6 +48,8 @@ window.addEventListener("hashchange", function () {
   }
 });
 
+// Handles window resize events
+// Resizes the canvas
 function windowResized() {
   div = document.getElementById("mainscreen");
   resizeCanvas(div.clientWidth, div.clientHeight);

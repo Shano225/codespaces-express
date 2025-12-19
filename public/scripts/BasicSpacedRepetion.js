@@ -1,3 +1,5 @@
+// BasicSpacedRepetition.js
+// Implements a weighted random selection algorithm for spaced repetition
 // Base bump amounts for each reaction type.
 // Basic spaced repetition helper that tracks probability weights for cards.
 const DEFAULT_REACTION_IMPACT = {
@@ -8,6 +10,9 @@ const DEFAULT_REACTION_IMPACT = {
 };
 
 class BasicSpacedRepetition {
+  // Constructor initializes the spaced repetition engine
+  // cards: Array of card objects
+  // options: Configuration options (reactionImpact, minProbability)
   constructor(cards = [], options = {}) {
     // Allow overriding the reaction deltas and minimum probability floor.
     this.reactionImpact = { ...DEFAULT_REACTION_IMPACT, ...(options.reactionImpact || {}) };
@@ -16,6 +21,8 @@ class BasicSpacedRepetition {
     this.setCards(cards);
   }
 
+  // Sets the list of cards and resets probabilities
+  // cards: Array of card objects to manage
   setCards(cards = []) {
     // Reset to a uniform distribution: every card starts with equal weight.
     const list = Array.isArray(cards) ? cards : [];
@@ -28,6 +35,8 @@ class BasicSpacedRepetition {
     }));
   }
 
+  // Returns the current probability distribution
+  // Useful for visualizing or debugging card weights
   getDistribution() {
     // Expose a copy so UIs can render the current per-card probabilities.
     return this.entries.map((entry) => ({
@@ -37,6 +46,8 @@ class BasicSpacedRepetition {
     }));
   }
 
+  // Selects a card based on weighted probability
+  // Returns the selected card object
   sample() {
     // Weighted random draw using cumulative probability.
     if (!this.entries.length) return null;
@@ -51,6 +62,9 @@ class BasicSpacedRepetition {
     return this.entries[this.entries.length - 1].card;
   }
 
+  // Updates the probability of a card based on user reaction
+  // cardId: ID of the card being reacted to
+  // reaction: 'again', 'hard', 'unsure', 'good', 'great'
   recordReaction(cardId, reaction) {
     // Increase the probability of the reacted card, then renormalize to keep sum=1.
     const entry = this.entries.find((item) => item.id === cardId);
@@ -65,6 +79,8 @@ class BasicSpacedRepetition {
     return entry.card;
   }
 
+  // Normalizes probabilities so they sum to 1
+  // Internal helper function
   _normalize() {
     // Divide each probability by the total to remove any drift.
     const total = this.entries.reduce((sum, entry) => sum + entry.probability, 0);
@@ -81,12 +97,16 @@ class BasicSpacedRepetition {
     });
   }
 
+  // Determines the probability impact of a reaction
+  // Internal helper function
   _resolveImpact(reaction) {
     if (typeof reaction === 'number' && !Number.isNaN(reaction)) return reaction;
     const key = reaction ? String(reaction).toLowerCase() : 'default';
     return this.reactionImpact[key] ?? this.reactionImpact.default;
   }
 
+  // Resolves a unique ID for a card
+  // Internal helper function
   _resolveId(card, index) {
     const candidate = card?.CardID ?? card?.cardId ?? card?.id ?? card?.ID;
     return candidate ?? `card-${index}`;

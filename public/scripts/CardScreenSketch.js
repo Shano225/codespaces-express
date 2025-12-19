@@ -1,3 +1,5 @@
+// CardScreenSketch.js
+// Main flashcard study screen using p5.js
 // Client-side sketch: fetch flashcards from server API and apply spaced repetition.
 let showDefinition = false;
 let currentFront = '';
@@ -17,6 +19,8 @@ let deckSelect;
 let availableDecks = [];
 let selectedDeckId = '';
 
+// Setup function called by p5.js
+// Initializes canvas, UI, and loads data
 function setup() {
   container = document.getElementById('mainscreen');
   const { width: w, height: h } = getContainerSize();
@@ -37,6 +41,8 @@ function setup() {
   });
 }
 
+// Draw loop called by p5.js
+// Renders the card or status message
 function draw() {
   background(246, 247, 249);
   if (!currentCardId) {
@@ -47,6 +53,8 @@ function draw() {
   drawInstructions();
 }
 
+// Handles key press events
+// Navigation, flipping, and exit
 function keyPressed() {
   if (key === 'p' || keyCode === RIGHT_ARROW) {
     goToNextCard(true);
@@ -59,6 +67,8 @@ function keyPressed() {
   }
 }
 
+// Handles mouse press events
+// Flipping card on click
 function mousePressed() {
   const { cardLeft, cardRight, cardTop, cardBottom } = getCardBounds();
   const insideCard = mouseX > cardLeft && mouseX < cardRight && mouseY > cardTop && mouseY < cardBottom;
@@ -67,6 +77,8 @@ function mousePressed() {
   }
 }
 
+// Fetches decks and cards from the server
+// Initializes the spaced repetition engine
 function loadDecks() {
   if (deckSelect) {
     deckSelect.innerHTML = '<option value="">Loading decks…</option>';
@@ -87,6 +99,7 @@ function loadDecks() {
     });
 }
 
+// Populates the deck selection dropdown
 function populateDeckSelect() {
   if (!deckSelect) return;
   deckSelect.innerHTML = '';
@@ -103,6 +116,8 @@ function populateDeckSelect() {
   });
 }
 
+// Loads a specific deck of cards
+// cards: Array of card objects
 function loadDeck(cards) {
   const filtered = selectedDeckId
     ? cards.filter((card) => String(card.DeckID) === String(selectedDeckId))
@@ -129,6 +144,8 @@ function loadDeck(cards) {
   goToNextCard(true);
 }
 
+// Handles window resize events
+// Resizes the canvas
 function windowResized() {
   const { width: w, height: h } = getContainerSize();
   resizeCanvas(w, h);
@@ -139,6 +156,8 @@ window.addEventListener('hashchange', function() {
     }
 });
 
+// Draws the current flashcard
+// Renders front/back text and reaction badge
 function drawCard() {
   const cardWidth = Math.min(width * 0.8, 700);
   const cardHeight = Math.min(height * 0.65, 420);
@@ -167,6 +186,7 @@ function drawCard() {
   drawCenteredMultiline(content || fallback, cardX, cardY, cardWidth - 80, cardHeight - 120);
 }
 
+// Draws instructions at the bottom of the screen
 function drawInstructions() {
   push();
   fill(90);
@@ -181,6 +201,7 @@ function drawInstructions() {
   pop();
 }
 
+// Helper to draw a label (Front/Back)
 function drawLabel(textValue, x, y) {
   push();
   textAlign(CENTER, CENTER);
@@ -190,6 +211,7 @@ function drawLabel(textValue, x, y) {
   pop();
 }
 
+// Helper to draw a reaction badge
 function drawBadge(reaction, x, y) {
   const label = formatReactionLabel(reaction);
   push();
@@ -210,6 +232,8 @@ function drawBadge(reaction, x, y) {
   pop();
 }
 
+// Calculates the bounds of the card
+// Returns an object with left, right, top, bottom
 function getCardBounds() {
   const cardWidth = Math.min(width * 0.8, 700);
   const cardHeight = Math.min(height * 0.65, 420);
@@ -221,6 +245,7 @@ function getCardBounds() {
   };
 }
 
+// Gets the size of the container element
 function getContainerSize() {
   if (!container) {
     return { width: windowWidth, height: windowHeight };
@@ -232,6 +257,10 @@ function getContainerSize() {
   };
 }
 
+// Draws centered multiline text
+// textValue: Text to draw
+// centerX, centerY: Center coordinates
+// maxWidth, maxHeight: Maximum dimensions
 function drawCenteredMultiline(textValue, centerX, centerY, maxWidth, maxHeight) {
   push();
   textAlign(CENTER, CENTER);
@@ -272,6 +301,7 @@ function drawCenteredMultiline(textValue, centerX, centerY, maxWidth, maxHeight)
   pop();
 }
 
+// Sets up reaction button event listeners
 function setupReactionButtons() {
   reactionButtons = Array.from(document.querySelectorAll('[data-reaction-btn]'));
   reactionButtons.forEach((button) => {
@@ -282,6 +312,8 @@ function setupReactionButtons() {
   });
 }
 
+// Handles a user's reaction choice
+// Records reaction and moves to next card
 function handleReactionChoice(reaction) {
   if (!reaction || !currentCardId) return;
   lastReactionChoice = reaction;
@@ -292,6 +324,7 @@ function handleReactionChoice(reaction) {
   goToNextCard(true);
 }
 
+// Updates the active state of reaction buttons
 function setActiveReactionButton(reaction) {
   reactionButtons.forEach((button) => {
     const isActive = button.getAttribute('data-reaction-btn') === reaction && reaction !== '';
@@ -299,11 +332,13 @@ function setActiveReactionButton(reaction) {
   });
 }
 
+// Formats a reaction string for display
 function formatReactionLabel(reaction) {
   if (!reaction) return '';
   return reaction.charAt(0).toUpperCase() + reaction.slice(1);
 }
 
+// Sets up arrow button event listeners
 function setupArrowButtons() {
   arrowButtons = Array.from(document.querySelectorAll('[data-arrow]'));
   arrowButtons.forEach((button) => {
@@ -318,6 +353,8 @@ function setupArrowButtons() {
   });
 }
 
+// Navigates to the next card
+// forceSample: Whether to force sampling a new card instead of history
 function goToNextCard(forceSample = false) {
   if (!spacedEngine) return;
 
@@ -345,6 +382,7 @@ function goToNextCard(forceSample = false) {
   applyCard(nextCard);
 }
 
+// Navigates to the previous card in history
 function goToPreviousCard() {
   if (historyIndex <= 0) return;
   historyIndex -= 1;
@@ -354,6 +392,9 @@ function goToPreviousCard() {
   }
 }
 
+// Applies the current card data to the UI state
+// card: The card object to display
+// keepDefinition: Whether to keep the definition side shown
 function applyCard(card, keepDefinition = false) {
   currentCardId = resolveCardId(card);
   currentFront = card?.Front || '';
@@ -364,6 +405,7 @@ function applyCard(card, keepDefinition = false) {
   setActiveReactionButton('');
 }
 
+// Resolves a unique ID for a card
 function resolveCardId(card, fallbackIndex = 0) {
   if (!card) {
     return `card-${fallbackIndex}`;
@@ -381,6 +423,7 @@ function resolveCardId(card, fallbackIndex = 0) {
   return resolved;
 }
 
+// Draws a status message in the center of the screen
 function drawStatusMessage(textValue) {
   push();
   fill(90);
@@ -389,6 +432,7 @@ function drawStatusMessage(textValue) {
   text(textValue, width / 2, height / 2);
   pop();
 }
+// Sets up the deck selector event listener
 function setupDeckSelector() {
   if (!deckSelect) return;
   deckSelect.addEventListener('change', () => {

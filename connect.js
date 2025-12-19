@@ -67,6 +67,7 @@ DB.serialize(() => {
   });
 });
 
+// Helper function to ensure the Username column exists in the deck table
 function ensureDeckUsernameColumnExists() {
   DB.all('PRAGMA table_info(deck)', (err, rows) => {
     if (err) {
@@ -93,6 +94,8 @@ function ensureDeckUsernameColumnExists() {
   });
 }
 
+// Helper function to ensure the DeckID column exists in the flashcard table
+// Adds the column if it's missing and sets a default value
 function ensureDeckColumnExists() {
   DB.all("PRAGMA table_info(flashcard)", (err, rows) => {
     if (err) {
@@ -122,6 +125,8 @@ function ensureDeckColumnExists() {
   });
 }
 
+// Helper function to ensure a default deck exists
+// Creates a "General" deck if no deck with ID 1 exists
 function ensureDefaultDeck() {
   const defaultDeckName = "General";
   DB.get("SELECT DeckID FROM deck WHERE DeckID = 1", (err, row) => {
@@ -149,6 +154,8 @@ function ensureDefaultDeck() {
   });
 }
 
+// Helper function to assign orphan cards to the default deck
+// Updates cards with null or empty DeckID to belong to deck 1
 function assignDeckToOrphanCards() {
   DB.run(
     'UPDATE flashcard SET DeckID = 1 WHERE DeckID IS NULL OR DeckID = ""',
