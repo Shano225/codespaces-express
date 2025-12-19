@@ -133,14 +133,6 @@ app.post('/api/decks', (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 // Delete a flashcard by CardID
 // Uses query parameter `id`, e.g. DELETE /api?id=3
 // This endpoint deletes a flashcard from the database by its ID.
@@ -166,6 +158,66 @@ app.delete('/api', (req, res) => {
   });
 });
 
+// Get a random spaced repetition card
+// Currently behaves same as random, but intended for spaced repetition logic
+app.get('/api/spacedcard', (req, res) => {
+  const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
+  DB.get(sql, [], (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ message: 'No flashcards found' });
+    }
+    res.json({ flashcard: row });
+  });
+});
+
+// Get statistics
+// Responds with JSON: { totalCards, totalDecks, masteredCards, strugglingCards }
+// This endpoint aggregates statistics for the dashboard.
+app.get('/api/stats', (req, res) => {
+  const stats = {};
+  
+  // Parallelize queries for efficiency
+  const p1 = new Promise((resolve, reject) => {
+    DB.get(
+      `SELECT 
+        COUNT(*) as total, 
+        SUM(CASE WHEN Reaction = 'great' THEN 1 ELSE 0 END) as mastered,
+        SUM(CASE WHEN Reaction IN ('hard', 'again') THEN 1 ELSE 0 END) as struggling
+       FROM flashcard`,
+      [],
+      (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      }
+    );
+  });
+
+  const p2 = new Promise((resolve, reject) => {
+    DB.get('SELECT COUNT(*) as count FROM deck', [], (err, row) => {
+      if (err) reject(err);
+      else resolve(row ? row.count : 0);
+    });
+  });
+
+  Promise.all([p1, p2])
+    .then(([cardStats, deckCount]) => {
+      res.json({
+        totalCards: cardStats ? cardStats.total : 0,
+        masteredCards: cardStats ? cardStats.mastered || 0 : 0,
+        strugglingCards: cardStats ? cardStats.struggling || 0 : 0,
+        totalDecks: deckCount
+      });
+    })
+    .catch((err) => {
+      console.error('Stats query error:', err.message);
+      res.status(500).json({ error: err.message });
+    });
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -183,21 +235,7 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
-// Get a random spaced repetition card
-// Currently behaves same as random, but intended for spaced repetition logic
-app.get('/api/spacedcard', (req, res) => {
-  const sql = 'SELECT * FROM flashcard ORDER BY RANDOM() LIMIT 1';
-  DB.get(sql, [], (err, row) => {
-    if (err) {
-      console.error(err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    if (!row) {
-      return res.status(404).json({ message: 'No flashcards found' });
-    }
-    res.json({ flashcard: row });
-  });
-});
+
 
 
 
