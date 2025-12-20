@@ -227,7 +227,7 @@ function renderCards() {
         <td>${card.CardID ?? '—'}</td>
         <td>${escapeHtml(shorten(card.Front))}</td>
         <td>${escapeHtml(shorten(card.Back))}</td>
-        <td>${resolveDeckName(card.DeckID)}</td>
+        <td>${escapeHtml(resolveDeckName(card))}</td>
         <td><span class="badge">${card.Reaction || '—'}</span></td>
         <td class="actions">
           <button class="manager-button danger" data-delete="${card.CardID}">Delete</button>
@@ -247,9 +247,14 @@ function renderCards() {
   updateStats(filtered.length);
 }
 
-// Resolves deck ID to deck name
-// deckId: The ID of the deck
-function resolveDeckName(deckId) {
+// Resolves a card's deck name to display. Prefers a DeckName returned from the API
+// (so existing cards and pre-existing DB values both work). If not present, falls back
+// to looking up the deck list already loaded into state.
+// card: The card object which may include DeckID and DeckName
+function resolveDeckName(card) {
+  if (!card) return '—';
+  if (card.DeckName) return card.DeckName;
+  const deckId = card.DeckID;
   const match = state.decks.find((deck) => String(deck.DeckID) === String(deckId));
   return match ? match.Name : '—';
 }

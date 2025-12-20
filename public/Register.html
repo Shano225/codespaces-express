@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - Flashcard App</title>
+    <link rel="stylesheet" href="css/app.css" />
+    <style>
+      body { background-color: #f0f2f5; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+      .login-container { background:#fff; padding:40px; border-radius:8px; width:100%; max-width:420px; text-align:center; }
+      .login-title { margin-bottom:24px; color:#333; font-size:24px; font-weight:600; }
+      .login-form { display:flex; flex-direction:column; gap:12px; }
+      .form-label { display:block; margin-bottom:8px; color:#555; font-weight:500; font-size:14px; text-align:left; }
+      .form-input { width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px; box-sizing:border-box; }
+      .submit-btn { background-color:#333; color:#fff; padding:12px; border:none; border-radius:6px; font-size:16px; cursor:pointer; }
+      .submit-btn:hover { background-color:#555; }
+      .error-message { color:#d32f2f; font-size:14px; margin-top:16px; display:none; }
+      .success-message { color:#2e7d32; font-size:14px; margin-top:16px; display:none; }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h1 class="login-title">Create account</h1>
+      <form id="registerForm" class="login-form">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username" required />
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter a password" required />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm password" required />
+        </div>
+        <button type="submit" class="submit-btn">Register</button>
+      </form>
+      <div id="message" class="error-message"></div>
+      <div id="success" class="success-message"></div>
+      <p style="margin-top:12px;">Already have an account? <a href="/Login.html">Log in</a></p>
+    </div>
+    <script src="scripts/register.js"></script>
+  </body>
+</html>

@@ -7,6 +7,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const bcrypt = require('bcrypt');
 
 // Database connection exported from connect.js (sqlite3 instance)
 const { DB } = require('./connect');
@@ -28,9 +29,10 @@ app.use('/users', usersRouter);
 
 // Get all flashcards
 // Responds with JSON: { flashcards: [...] }
-// This endpoint retrieves all flashcards from the database.
+// This endpoint retrieves all flashcards from the database. It now includes the deck name
+// (if any) as `DeckName` so clients can display the deck without an extra lookup.
 app.get('/api', (req, res) => {
-  const sql = 'SELECT * FROM flashcard';
+  const sql = `SELECT flashcard.*, deck.Name AS DeckName FROM flashcard LEFT JOIN deck ON flashcard.DeckID = deck.DeckID`;
   DB.all(sql, [], (err, rows) => {
     if (err) {
       console.error(err.message);
@@ -57,10 +59,54 @@ app.get('/api/random', (req, res) => {
   });
 });
 
+// Get statistics
+// Responds with JSON: { totalCards, totalDecks, masteredCards, strugglingCards }
+// This endpoint aggregates statistics for the dashboard.
+app.get('/api/stats', (req, res) => {
+  const stats = {};
+  
+  // Parallelize queries for efficiency
+  const p1 = new Promise((resolve, reject) => {
+    DB.get(
+      `SELECT 
+        COUNT(*) as total, 
+        SUM(CASE WHEN Reaction = 'great' THEN 1 ELSE 0 END) as mastered,
+        SUM(CASE WHEN Reaction IN ('hard', 'again') THEN 1 ELSE 0 END) as struggling
+       FROM flashcard`,
+      [],
+      (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      }
+    );
+  });
+
+  const p2 = new Promise((resolve, reject) => {
+    DB.get('SELECT COUNT(*) as count FROM deck', [], (err, row) => {
+      if (err) reject(err);
+      else resolve(row ? row.count : 0);
+    });
+  });
+
+  Promise.all([p1, p2])
+    .then(([cardStats, deckCount]) => {
+      res.json({
+        totalCards: cardStats ? cardStats.total : 0,
+        masteredCards: cardStats ? cardStats.mastered || 0 : 0,
+        strugglingCards: cardStats ? cardStats.struggling || 0 : 0,
+        totalDecks: deckCount
+      });
+    })
+    .catch((err) => {
+      console.error('Stats query error:', err.message);
+      res.status(500).json({ error: err.message });
+    });
+});
+
 // Get a single flashcard by CardID
 // Example: GET /api/3
 // This endpoint retrieves a specific flashcard by its ID.
-app.get('/api/:id', (req, res) => {
+app.get('/api/:id(\\d+)', (req, res) => {
   const id = req.params.id;
   const sql = 'SELECT * FROM flashcard WHERE CardID = ?';
   DB.get(sql, [id], (err, row) => {
@@ -174,49 +220,49 @@ app.get('/api/spacedcard', (req, res) => {
   });
 });
 
-// Get statistics
-// Responds with JSON: { totalCards, totalDecks, masteredCards, strugglingCards }
-// This endpoint aggregates statistics for the dashboard.
-app.get('/api/stats', (req, res) => {
-  const stats = {};
-  
-  // Parallelize queries for efficiency
-  const p1 = new Promise((resolve, reject) => {
-    DB.get(
-      `SELECT 
-        COUNT(*) as total, 
-        SUM(CASE WHEN Reaction = 'great' THEN 1 ELSE 0 END) as mastered,
-        SUM(CASE WHEN Reaction IN ('hard', 'again') THEN 1 ELSE 0 END) as struggling
-       FROM flashcard`,
-      [],
-      (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
+// /api/stats route moved earlier to avoid matching /api/:id
+// (keeps routes specific and prevents accidental parameter collisions)
+
+
+// Register new user
+app.post('/api/register', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'username and password required' });
+  }
+
+  DB.get('SELECT Username FROM users WHERE Username = ?', [username], (err, row) => {
+    if (err) {
+      console.error('User check error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (row) {
+      return res.status(409).json({ error: 'username already exists' });
+    }
+
+    bcrypt.hash(password, 10, (hashErr, hash) => {
+      if (hashErr) {
+        console.error('Hash error:', hashErr.message);
+        return res.status(500).json({ error: hashErr.message });
       }
-    );
-  });
 
-  const p2 = new Promise((resolve, reject) => {
-    DB.get('SELECT COUNT(*) as count FROM deck', [], (err, row) => {
-      if (err) reject(err);
-      else resolve(row ? row.count : 0);
-    });
-  });
+      DB.run('INSERT INTO users (Username, PasswordHash) VALUES (?, ?)', [username, hash], function (insErr) {
+        if (insErr) {
+          console.error('User insert error:', insErr.message);
+          return res.status(500).json({ error: insErr.message });
+        }
 
-  Promise.all([p1, p2])
-    .then(([cardStats, deckCount]) => {
-      res.json({
-        totalCards: cardStats ? cardStats.total : 0,
-        masteredCards: cardStats ? cardStats.mastered || 0 : 0,
-        strugglingCards: cardStats ? cardStats.struggling || 0 : 0,
-        totalDecks: deckCount
+        // Create a personal default deck for the user (optional)
+        
+            // don't fail registration for deck error
+          
+          return res.status(201).json({ message: 'User created' });
+        });
       });
-    })
-    .catch((err) => {
-      console.error('Stats query error:', err.message);
-      res.status(500).json({ error: err.message });
     });
-});
+  });
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

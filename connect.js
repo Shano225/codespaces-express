@@ -64,6 +64,22 @@ DB.serialize(() => {
 
     ensureDeckColumnExists();
     ensureDeckUsernameColumnExists();
+
+    // Create users table for registrations (Username unique, store password hash)
+    const createUsersSQL = `
+      CREATE TABLE IF NOT EXISTS users (
+        UserID INTEGER PRIMARY KEY,
+        Username TEXT NOT NULL UNIQUE,
+        PasswordHash TEXT NOT NULL
+      )
+    `;
+    DB.run(createUsersSQL, (usersErr) => {
+      if (usersErr) {
+        console.log("Error creating users table:", usersErr.message);
+        return;
+      }
+      console.log("Users table is ready.");
+    });
   });
 });
 
